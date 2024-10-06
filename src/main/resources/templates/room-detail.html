@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title th:text="${room.roomname}"></title>
+        <script src="/webjars/jquery/dist/jquery.min.js"></script>
+        <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+        <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    </head>
+
+    <body>
+        <h1 th:text="${room.roomname}"></h1>
+        <div id="content" th:data-room-id="${room.chatroomId}" th:data-member="${member}">
+            <ul id="chatBox"></ul> <!--채팅창-->
+            <input name="message" />
+            <button id="send">보내기</button>
+            <a th:href="@{/chat/rooms-out}"><button id="disconnect" type="submit">나가기</button></a>
+        </div>
+
+        <script>
+            var client = null;
+            var roomId = $('#content').data('room-id');
+            var member = $('#content').data('member');
+
+            $(function () {
+                var sock = new SockJS("/chat");
+                client = Stomp.over(sock);
+
+                client.connect({}, function () {
+                    client.send('/publish/chat/enter', {}, JSON.stringify({chatroomId: roomId, type: 'ENTER', senderId: member}));
+
+                    client.subscribe('/subscribe/chat/room/' + roomId, function (chat) {
+                        var content = JSON.parse(chat.body);
+                        $('#chatBox').append('<li>' + '[' + content.senderId + ']' + content.message + '</li>')
+                    });
+
+                    client.subscribe('/subscribe/chat/room/inout/' + roomId, function (chat) {
+                        var content = JSON.parse(chat.body);
+                        $('#chatBox').append('<li>' + content.message + '</li>')
+                    });
+                });
+
+                $( "#send" ).click(function() { sendMsg(); });
+                $( "#disconnect" ).click(function() { disconnect(); });
+            });
+
+
+            //메시지를 발행(생성)
+            function sendMsg() {
+                var message = $('input[name="message"]').val();
+                client.send('/publish/chat/talk', {}, JSON.stringify({chatroomId: roomId, type: 'CHAT', message: message, senderId: member}));
+                $('input[name="message"]').val('');
+            }
+
+            //웹소켓 연결 끊기
+            function disconnect() {
+                //자신에게는 나갔다는 글이 보이지 않음
+                client.send('/publish/chat/exit', {}, JSON.stringify({chatroomId: roomId, type: 'EXIT', senderId: member}));
+
+                if (client !== null) {
+                    client.disconnect();
+                }
+                console.log("Disconnected");
+            }
+
+        </script>
+    </body>
+</html>

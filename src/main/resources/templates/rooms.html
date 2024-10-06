@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+        <script src="/js/basic.js"></script>
+        <title>채팅방 목록</title>
+    </head>
+
+    <body>
+        <div>
+            <div><span id="username"></span> 님 반갑습니다.</div>
+            <div><a href="javascript:logout()">로그아웃</a></div><br>
+            <h1>채팅방 목록</h1>
+        </div>
+
+        <ul>
+            <li th:each="room : ${rooms}">
+                <a th:href="@{/chat/rooms/{chatroomId}(chatroomId=${room.chatroomId})}" th:text="${room.roomname}"></a>
+            </li>
+        </ul>
+    </body>
+</html>

@@ -1,15 +1,16 @@
 package com.example.chatTest.controller;
 
 
-import com.example.chatTest.repository.ChatroomRepository;
 import com.example.chatTest.model.Chatroom;
+import com.example.chatTest.repository.ChatroomRepository;
+import com.example.chatTest.springSecurity.UserDetailsImpl;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 @AllArgsConstructor
@@ -18,7 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ChatRoomController {
 
     private final ChatroomRepository chatroomRepository;
-    private final AtomicInteger seq = new AtomicInteger(0); //이거 없애고 진짜 유저를 넣어야 한다.
 
     //채팅룸 목록
     @GetMapping("/rooms")
@@ -29,12 +29,13 @@ public class ChatRoomController {
 
     //채팅방 들어가기(상세)
     @GetMapping("/rooms/{chatroomId}")
-    public String room(@PathVariable String chatroomId, Model model) {
+    public String room(@PathVariable String chatroomId, Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) { //이거 왜 안되지
         Chatroom room = chatroomRepository.findById(Long.valueOf(chatroomId)).orElseThrow(
                 () -> new RuntimeException("방 존재하지 않습니다.")
         );
+
         model.addAttribute("room", room);
-        model.addAttribute("member", "member" + seq.incrementAndGet());
+        model.addAttribute("member", userDetails.getUser().getUsername());
         return "/room-detail";
     }
 

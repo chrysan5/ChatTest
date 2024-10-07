@@ -1,4 +1,5 @@
 const host = 'http://' + window.location.host;
+let username = '';
 
 $(document).ready(function () {
     const auth = getToken();
@@ -13,16 +14,14 @@ $(document).ready(function () {
         return;
     }
 
-
-
     $.ajax({
         type: 'GET',
         url: `/users/user-info`,
         contentType: 'application/json',
     })
         .done(function (res, status, xhr) {
-            const username = res.username;
-            const isAdmin = !!res.admin;
+            username = res.username;
+            //const isAdmin = !!res.admin;
 
             if (!username) {
                 window.location.href = '/users/login-page';
@@ -44,6 +43,7 @@ function logout() {
     window.location.href = host + '/users/login-page';
 }
 
+
 function getToken() {
     let auth = Cookies.get('Authorization');
 
@@ -52,9 +52,9 @@ function getToken() {
     }
 
     // kakao 로그인 사용한 경우 Bearer 추가
-    if(auth.indexOf('Bearer') === -1 && auth !== ''){
+    /*if(auth.indexOf('Bearer') === -1 && auth !== ''){
         auth = 'Bearer ' + auth;
-    }
+    }*/
 
     return auth;
 }

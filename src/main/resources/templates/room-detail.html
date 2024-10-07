@@ -6,9 +6,13 @@
         <script src="/webjars/jquery/dist/jquery.min.js"></script>
         <script src="/webjars/sockjs-client/sockjs.min.js"></script>
         <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+        <script src="/js/common.js"></script>
     </head>
 
     <body>
+    <span th:text="${member}"></span><!--<span id="username"></span>-->님 반갑습니다.</div>
+
         <h1 th:text="${room.roomname}"></h1>
         <div id="content" th:data-room-id="${room.chatroomId}" th:data-member="${member}">
             <ul id="chatBox"></ul> <!--채팅창-->
@@ -18,24 +22,24 @@
         </div>
 
         <script>
-            var client = null;
-            var roomId = $('#content').data('room-id');
-            var member = $('#content').data('member');
+            let client = null;
+            let roomId = $('#content').data('room-id');
+            let member = '[[${member}]]';
 
             $(function () {
-                var sock = new SockJS("/chat");
+                let sock = new SockJS("/chat");
                 client = Stomp.over(sock);
 
                 client.connect({}, function () {
                     client.send('/publish/chat/enter', {}, JSON.stringify({chatroomId: roomId, type: 'ENTER', senderId: member}));
 
                     client.subscribe('/subscribe/chat/room/' + roomId, function (chat) {
-                        var content = JSON.parse(chat.body);
+                        let content = JSON.parse(chat.body);
                         $('#chatBox').append('<li>' + '[' + content.senderId + ']' + content.message + '</li>')
                     });
 
                     client.subscribe('/subscribe/chat/room/inout/' + roomId, function (chat) {
-                        var content = JSON.parse(chat.body);
+                        let content = JSON.parse(chat.body);
                         $('#chatBox').append('<li>' + content.message + '</li>')
                     });
                 });
@@ -47,14 +51,13 @@
 
             //메시지를 발행(생성)
             function sendMsg() {
-                var message = $('input[name="message"]').val();
+                let message = $('input[name="message"]').val();
                 client.send('/publish/chat/talk', {}, JSON.stringify({chatroomId: roomId, type: 'CHAT', message: message, senderId: member}));
                 $('input[name="message"]').val('');
             }
 
             //웹소켓 연결 끊기
             function disconnect() {
-                //자신에게는 나갔다는 글이 보이지 않음
                 client.send('/publish/chat/exit', {}, JSON.stringify({chatroomId: roomId, type: 'EXIT', senderId: member}));
 
                 if (client !== null) {

@@ -25,31 +25,30 @@
     });
 
     function onLogin() {
-      let username = $('#username').val();
-      let password = $('#password').val();
+        let username = $('#username').val();
+        let password = $('#password').val();
 
-      $.ajax({
-        type: "POST",
-        url: `/users/login`,
-        contentType: "application/json",
-        data: JSON.stringify({username: username, password: password}),
-      })
-            .done(function (res, status, xhr) {
-              const token = xhr.getResponseHeader('Authorization');
+        $.ajax({
+          type: "POST",
+          url: `/users/login`,
+          contentType: "application/json",
+          data: JSON.stringify({username: username, password: password}),
+        })
+        .done(function (res, status, xhr) {
+            const token = xhr.getResponseHeader('Authorization');
 
-              //모든 경로에서 이 쿠키 사용가능하다
-              Cookies.set('Authorization', token, {path: '/'})
+            Cookies.set('Authorization', token, {path: '/'})
 
-              //auth 헤더 추가
-              $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
-                jqXHR.setRequestHeader('Authorization', token);
-              });
-
-              window.location.href = 'http://' + window.location.host + '/chat/rooms'; //로그인되면 여기로 이동
-            })
-            .fail(function (jqXHR, textStatus) {
-              alert("Login Fail");
+            $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
+              jqXHR.setRequestHeader('Authorization', token);
             });
+
+            window.location.href = 'http://' + window.location.host + '/chat/rooms'; //로그인되면 여기로 이동
+        })
+        .fail(function (jqXHR, textStatus) {
+            alert("Login Fail");
+        });
+
     }
   </script>
 </html>

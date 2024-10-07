@@ -22,8 +22,9 @@ public class ChatRoomController {
 
     //채팅룸 목록
     @GetMapping("/rooms")
-    public String rooms(Model model) {
+    public String rooms(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         model.addAttribute("rooms", chatroomRepository.findAll());
+        model.addAttribute("username", userDetails.getUsername());
         return "/rooms";
     }
 
@@ -35,7 +36,7 @@ public class ChatRoomController {
         );
 
         model.addAttribute("room", room);
-        model.addAttribute("member", userDetails.getUser().getUsername());
+        model.addAttribute("username", userDetails.getUsername());
         return "/room-detail";
     }
 

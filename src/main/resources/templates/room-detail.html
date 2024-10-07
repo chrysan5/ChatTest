@@ -11,10 +11,10 @@
     </head>
 
     <body>
-    <span th:text="${member}"></span><!--<span id="username"></span>-->님 반갑습니다.</div>
+    <span th:text="${username}"></span>님 반갑습니다.</div>
 
         <h1 th:text="${room.roomname}"></h1>
-        <div id="content" th:data-room-id="${room.chatroomId}" th:data-member="${member}">
+        <div id="content" th:data-room-id="${room.chatroomId}" th:data-username="${username}">
             <ul id="chatBox"></ul> <!--채팅창-->
             <input name="message" />
             <button id="send">보내기</button>
@@ -24,14 +24,14 @@
         <script>
             let client = null;
             let roomId = $('#content').data('room-id');
-            let member = '[[${member}]]';
+            let username = '[[${username}]]';
 
             $(function () {
                 let sock = new SockJS("/chat");
                 client = Stomp.over(sock);
 
                 client.connect({}, function () {
-                    client.send('/publish/chat/enter', {}, JSON.stringify({chatroomId: roomId, type: 'ENTER', senderId: member}));
+                    client.send('/publish/chat/enter', {}, JSON.stringify({chatroomId: roomId, type: 'ENTER', senderId: username}));
 
                     client.subscribe('/subscribe/chat/room/' + roomId, function (chat) {
                         let content = JSON.parse(chat.body);
@@ -52,13 +52,13 @@
             //메시지를 발행(생성)
             function sendMsg() {
                 let message = $('input[name="message"]').val();
-                client.send('/publish/chat/talk', {}, JSON.stringify({chatroomId: roomId, type: 'CHAT', message: message, senderId: member}));
+                client.send('/publish/chat/talk', {}, JSON.stringify({chatroomId: roomId, type: 'CHAT', message: message, senderId: username}));
                 $('input[name="message"]').val('');
             }
 
             //웹소켓 연결 끊기
             function disconnect() {
-                client.send('/publish/chat/exit', {}, JSON.stringify({chatroomId: roomId, type: 'EXIT', senderId: member}));
+                client.send('/publish/chat/exit', {}, JSON.stringify({chatroomId: roomId, type: 'EXIT', senderId: username}));
 
                 if (client !== null) {
                     client.disconnect();

@@ -1,5 +1,4 @@
 const host = 'http://' + window.location.host;
-let username = '';
 
 $(document).ready(function () {
     const auth = getToken();
@@ -13,27 +12,6 @@ $(document).ready(function () {
         window.location.href = host + '/users/login-page';
         return;
     }
-
-    $.ajax({
-        type: 'GET',
-        url: `/users/user-info`,
-        contentType: 'application/json',
-    })
-        .done(function (res, status, xhr) {
-            username = res.username;
-            //const isAdmin = !!res.admin;
-
-            if (!username) {
-                window.location.href = '/users/login-page';
-                return;
-            }
-
-            $('#username').text(username);
-        })
-        .fail(function (jqXHR, textStatus) {
-            console.log("유저정보 error");
-            logout();
-        });
 })
 
 

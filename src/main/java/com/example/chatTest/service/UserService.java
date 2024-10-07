@@ -1,6 +1,10 @@
-package com.example.chatTest.springSecurity;
+package com.example.chatTest.service;
 
 
+import com.example.chatTest.model.User;
+import com.example.chatTest.repository.UserRepository;
+import com.example.chatTest.dto.UserRequestDto;
+import com.example.chatTest.dto.UserResponseDto;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

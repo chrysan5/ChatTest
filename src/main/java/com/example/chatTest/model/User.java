@@ -1,4 +1,4 @@
-package com.example.chatTest.springSecurity;
+package com.example.chatTest.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;

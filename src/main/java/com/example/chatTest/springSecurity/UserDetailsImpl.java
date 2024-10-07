@@ -1,6 +1,8 @@
 package com.example.chatTest.springSecurity;
 
 
+import com.example.chatTest.model.User;
+import com.example.chatTest.model.UserRoleEnum;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

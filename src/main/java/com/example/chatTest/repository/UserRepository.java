@@ -1,5 +1,6 @@
-package com.example.chatTest.springSecurity;
+package com.example.chatTest.repository;
 
+import com.example.chatTest.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

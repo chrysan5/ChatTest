@@ -60,11 +60,7 @@ public class WebSecurityConfig{
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-                        //.requestMatchers("/chat/**").permitAll()
-                        //.requestMatchers("/templates/**").permitAll()
                         .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
-                        //.requestMatchers("/users/signup").permitAll()
-                        //.requestMatchers("/users/login").permitAll()
                         .requestMatchers("/users/**").permitAll()
                         .anyRequest().authenticated()
         );

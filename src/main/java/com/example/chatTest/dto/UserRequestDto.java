@@ -1,4 +1,4 @@
-package com.example.chatTest.springSecurity;
+package com.example.chatTest.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

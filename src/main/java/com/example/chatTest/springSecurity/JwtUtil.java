@@ -1,7 +1,7 @@
 package com.example.chatTest.springSecurity;
 
 
-import com.example.chatTest.config.JwtAuthenticationToken;
+import com.example.chatTest.model.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -9,7 +9,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -30,11 +29,6 @@ public class JwtUtil {
     // 토큰 만료시간
     private final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
 
-    private final UserRepository userRepository;
-
-    public JwtUtil(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
     private String secretKey;
@@ -106,15 +100,6 @@ public class JwtUtil {
             return bearerToken.substring(9);
         }
         return null;
-    }
-
-    //JWT 토큰에서 인증 정보 조회
-    public Authentication getAuthentication(String token) {
-        String getIdFromJwt = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
-        User user = userRepository.findById(Long.valueOf(getIdFromJwt)).orElseThrow(
-                () -> new RuntimeException("id 찾을 수 없음")
-        );
-        return new JwtAuthenticationToken(user, null);
     }
 
 }

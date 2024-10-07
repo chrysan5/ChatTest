@@ -1,3 +1,4 @@
+/*
 package com.example.chatTest.springSecurity;
 
 import lombok.AllArgsConstructor;
@@ -8,4 +9,4 @@ import lombok.Getter;
 public class UserInfoDto {
     String username;
     boolean isAdmin;
-}
+}*/

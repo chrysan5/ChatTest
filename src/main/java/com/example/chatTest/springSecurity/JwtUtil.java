@@ -5,6 +5,7 @@ import com.example.chatTest.config.JwtAuthenticationToken;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,15 +61,6 @@ public class JwtUtil {
                         .compact();
     }
 
-    // header 에서 JWT 가져오기
-    public String getJwtFromHeader(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(7);
-        }
-        return null;
-    }
-
     // 토큰 검증
     public boolean validateToken(String token) {
         try {
@@ -89,6 +81,31 @@ public class JwtUtil {
     // 토큰에서 사용자 정보 가져오기
     public Claims getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    }
+
+    // header 에서 JWT 가져오기
+    public String getJwtFromHeader(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+
+        // 만약 헤더에 JWT가 없다면 쿠키에서 JWT를 읽어옴
+        if (StringUtils.isEmpty(bearerToken)) {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals("Authorization")) {
+                        bearerToken = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.substring(7);
+        }else if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer%20")){ //인코딩된 토큰
+            return bearerToken.substring(9);
+        }
+        return null;
     }
 
     //JWT 토큰에서 인증 정보 조회

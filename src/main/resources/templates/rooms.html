@@ -12,12 +12,32 @@
         <div>
             <span th:text="${username}"></span>님 반갑습니다.</div>
             <div><a href="javascript:logout()">로그아웃</a></div><br>
-            <h1>채팅방 목록</h1>
+            <!--<h1>채팅방 목록</h1>-->
         </div>
 
+        <form th:action="@{/chat/rooms}" method="post">
+            <div>
+                <input type="text" name="roomname" placeholder="Enter room name" required>
+                <button type="submit">채팅방 생성</button>
+            </div>
+        </form>
+
+        <h1>모든 채팅방 목록</h1>
         <ul>
             <li th:each="room : ${rooms}">
                 <a th:href="@{/chat/rooms/{chatroomId}(chatroomId=${room.chatroomId})}" th:text="${room.roomname}"></a>
+            </li>
+        </ul>
+
+        <h1>내가 속한 채팅방 목록</h1>
+        <ul>
+            <li th:each="myroom : ${myrooms}">
+                <a th:href="@{/chat/rooms/{chatroomId}(chatroomId=${myroom.chatroomId})}" th:text="${myroom.roomname}"></a>
+
+                <form th:action="@{/chat/rooms/{chatroomId}(chatroomId=${myroom.chatroomId})}" method="post" style="display:inline;">
+                    <input type="hidden" name="_method" value="put"/>
+                    <button type="submit" onclick="return confirm('정말로 삭제하시겠습니까?');">삭제</button>
+                </form>
             </li>
         </ul>
     </body>

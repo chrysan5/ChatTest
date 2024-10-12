@@ -1,5 +1,6 @@
 package com.example.chatTest.model;
 
+import com.example.chatTest.dto.ChatMessageDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +25,7 @@ public class ChatMessage {
     @Column(nullable = false)
     private String senderId;
 
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private String nickname;
 
     @Column(nullable = false)
@@ -44,4 +45,19 @@ public class ChatMessage {
     @JoinColumn(name = "chatroom_id", nullable = false)
     private Chatroom chatroom;
 
+    public ChatMessage(ChatMessageDto chatMessageDto, Chatroom chatroom){
+        this.senderId = chatMessageDto.getSenderId();
+        this.message = chatMessageDto.getMessage();
+        this.sendTime = LocalDateTime.now();
+        this.type = MessageType.valueOf(chatMessageDto.getType());
+        this.chatroom = chatroom;
+    }
+
+    public ChatMessage(ChatMessageDto chatMessageDto, String enterMsg, Chatroom chatroom){
+        this.senderId = chatMessageDto.getSenderId();
+        this.message = enterMsg;
+        this.sendTime = LocalDateTime.now();
+        this.type = MessageType.valueOf(chatMessageDto.getType());
+        this.chatroom = chatroom;
+    }
 }

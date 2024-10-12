@@ -3,6 +3,7 @@ package com.example.chatTest.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalTime;
@@ -13,6 +14,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Getter
+@Setter
 @Table(name = "chatrooms")
 public class Chatroom {
     @Id
@@ -31,5 +33,10 @@ public class Chatroom {
 
     /*@OneToMany(mappedBy = "chatroom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatroomMember> chatroomMemberList = new ArrayList<>();*/
+
+    public Chatroom(String roomname){
+        this.roomname = roomname;
+    }
+
 
 }

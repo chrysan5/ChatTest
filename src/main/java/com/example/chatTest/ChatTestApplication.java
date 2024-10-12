@@ -16,7 +16,6 @@ public class ChatTestApplication {
 	public static class MainController {
 		@GetMapping("/")
 		public String main() {
-			//return "redirect:/chat/rooms";
 			return "login";
 		}
 	}

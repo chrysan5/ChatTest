@@ -1,6 +1,6 @@
 package com.example.chatTest.dto;
 
-import com.example.chatTest.model.MessageType;
+import com.example.chatTest.model.ChatMessage;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,4 +20,13 @@ public class ChatMessageDto {
     //private String image;
     private boolean isDelete;
     private Long chatroomId;
+
+    public ChatMessageDto(ChatMessage chatMessage){
+        this.chatMessageId = chatMessage.getChatMessageId();
+        this.senderId = chatMessage.getSenderId();
+        this.nickname = chatMessage.getNickname();
+        this.message = chatMessage.getMessage();
+        this.type = chatMessage.getType().toString();
+        this.chatroomId = chatMessage.getChatroom().getChatroomId();
+    }
 }

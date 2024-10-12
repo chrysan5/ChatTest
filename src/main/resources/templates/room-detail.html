@@ -15,7 +15,7 @@
 
         <h1 th:text="${room.roomname}"></h1>
         <div id="content" th:data-room-id="${room.chatroomId}" th:data-username="${username}">
-            <ul id="chatBox"></ul> <!--채팅창-->
+            <ul id="chatBox" style="list-style-type: none; padding-left: 0;"></ul> <!--채팅창-->
             <input name="message" />
             <button id="send">보내기</button>
             <a th:href="@{/chat/rooms-out}"><button id="disconnect" type="submit">나가기</button></a>
@@ -35,13 +35,14 @@
 
                     client.subscribe('/subscribe/chat/room/' + roomId, function (chat) {
                         let content = JSON.parse(chat.body);
-                        $('#chatBox').append('<li>' + '[' + content.senderId + ']' + content.message + '</li>')
+                        $('#chatBox').append('<li>' + '[' + content.senderId + '] ' + content.message + ' ('+ new Date().toLocaleString() + ')' + '</li>')
                     });
 
                     client.subscribe('/subscribe/chat/room/inout/' + roomId, function (chat) {
                         let content = JSON.parse(chat.body);
-                        $('#chatBox').append('<li>' + content.message + '</li>')
+                        $('#chatBox').append('<li>' + content.message + ' ('+ new Date().toLocaleString() + ')' + '</li>')
                     });
+
                 });
 
                 $( "#send" ).click(function() { sendMsg(); });

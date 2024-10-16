@@ -9,8 +9,7 @@ import java.util.Optional;
 
 public interface ChatroomMemberRepository extends JpaRepository<ChatroomMember, Long> {
     List<ChatroomMember> findAllByUserIdAndIsDeleteFalse(Long userId);
-
-    ChatroomMember findByChatroom(Chatroom chatroom);
+    ChatroomMember findByChatroomAndUserId(Chatroom chatroom, Long userId);
 
     Optional<ChatroomMember> findByUserIdAndChatroom(Long userId, Chatroom chatroom);
 

@@ -74,12 +74,12 @@ public class ChatroomService {
     }
 
     @Transactional
-    public void deleteChatMember(String chatroomId) {
+    public void deleteChatMember(String chatroomId, Long userId) {
         Chatroom chatroom = chatroomRepository.findById(Long.valueOf(chatroomId)).orElseThrow(
                 () -> new RuntimeException("채팅방이 존재하지 않습니다.")
         );
 
-        ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroom(chatroom);
+        ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroomAndUserId(chatroom, userId);
         chatroomMember.setDelete(true);
     }
 

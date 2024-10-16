@@ -3,7 +3,7 @@ package com.example.chatTest.service;
 
 import com.example.chatTest.model.Chatroom;
 import com.example.chatTest.model.ChatroomMember;
-import com.example.chatTest.rabbitMQ.AuctionInfoMessage;
+import com.example.chatTest.rabbitmqtest.AuctionInfoMessage;
 import com.example.chatTest.repository.ChatroomMemberRepository;
 import com.example.chatTest.repository.ChatroomRepository;
 import lombok.AllArgsConstructor;

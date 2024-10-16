@@ -1,4 +1,4 @@
-package com.example.chatTest.rabbitMQ;
+package com.example.chatTest.rabbitmqtest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuctionEndpoint {
 
     @Value("${message.queue.auction-info}")
-    private String chatQueue;
+    private String actionInfoQueue;
 
     private final RabbitTemplate rabbitTemplate;
 
@@ -24,7 +24,7 @@ public class AuctionEndpoint {
     @PostMapping("/rabbitmq")
     public ResponseEntity<Void> auction(@RequestBody AuctionInfoMessage auctionInfoMessage) {
         //auction 객체 저장 로직 수행
-        rabbitTemplate.convertAndSend(chatQueue, auctionInfoMessage); //레빗mq를 통한 메시지 전송***
+        rabbitTemplate.convertAndSend(actionInfoQueue, auctionInfoMessage); //레빗mq를 통한 메시지 전송***
         log.info("auction send Message : {}",auctionInfoMessage.toString());
         return ResponseEntity.noContent().build();
     }

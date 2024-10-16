@@ -2,7 +2,7 @@ package com.example.chatTest.controller;
 
 
 import com.example.chatTest.model.Chatroom;
-import com.example.chatTest.rabbitMQ.AuctionInfoMessage;
+import com.example.chatTest.rabbitmqtest.AuctionInfoMessage;
 import com.example.chatTest.service.ChatroomService;
 import com.example.chatTest.springSecurity.UserDetailsImpl;
 import lombok.AllArgsConstructor;

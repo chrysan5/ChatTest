@@ -3,6 +3,7 @@ package com.example.chatTest.service;
 
 import com.example.chatTest.model.Chatroom;
 import com.example.chatTest.model.ChatroomMember;
+import com.example.chatTest.rabbitMQ.AuctionInfoMessage;
 import com.example.chatTest.repository.ChatroomMemberRepository;
 import com.example.chatTest.repository.ChatroomRepository;
 import lombok.AllArgsConstructor;
@@ -63,6 +64,16 @@ public class ChatroomService {
     }
 
     @Transactional
+    public void createChatroom(AuctionInfoMessage auctionInfoMessage) {
+        String roomname = auctionInfoMessage.getTitle();
+        String auctionEndTime = auctionInfoMessage.getEndTime();
+        Long userId = auctionInfoMessage.getRegisterMemberUserId();
+
+        Chatroom chatroom = chatroomRepository.save(new Chatroom(roomname, auctionEndTime));
+        chatroomMemberRepository.save(new ChatroomMember(chatroom, userId));
+    }
+
+    @Transactional
     public void deleteChatMember(String chatroomId) {
         Chatroom chatroom = chatroomRepository.findById(Long.valueOf(chatroomId)).orElseThrow(
                 () -> new RuntimeException("채팅방이 존재하지 않습니다.")
@@ -70,5 +81,17 @@ public class ChatroomService {
 
         ChatroomMember chatroomMember = chatroomMemberRepository.findByChatroom(chatroom);
         chatroomMember.setDelete(true);
+    }
+
+    @Transactional
+    public void deleteChatMemberAll(Long chatroomId) {
+        Chatroom chatroom = chatroomRepository.findById(Long.valueOf(chatroomId)).orElseThrow(
+                () -> new RuntimeException("채팅방이 존재하지 않습니다.")
+        );
+
+        List<ChatroomMember> chatroomMemberList = chatroomMemberRepository.findAllByChatroom(chatroom);
+        for(ChatroomMember chatroomMember : chatroomMemberList){
+            chatroomMember.setDelete(true);
+        }
     }
 }

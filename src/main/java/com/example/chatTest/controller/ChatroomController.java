@@ -2,9 +2,12 @@ package com.example.chatTest.controller;
 
 
 import com.example.chatTest.model.Chatroom;
+import com.example.chatTest.rabbitMQ.AuctionInfoMessage;
 import com.example.chatTest.service.ChatroomService;
 import com.example.chatTest.springSecurity.UserDetailsImpl;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
+@Slf4j
 @AllArgsConstructor
 @Controller
 @RequestMapping("/chat")
@@ -64,6 +67,13 @@ public class ChatroomController {
         return "redirect:/chat/rooms-list";
     }
 
+    //rabbitmq 메시징시스템에 의한 채팅방 생성
+    @RabbitListener(queues = "${message.queue.auction-info}")
+    public void receiveAuctionInfoMessage(AuctionInfoMessage auctionInfoMessage) {
+        log.info("CHAT RECEIVE:{}", auctionInfoMessage.toString());
+        chatroomService.createChatroom(auctionInfoMessage);
+    }
+    
     //채팅방 삭제 -> 채팅방 목록에서 보이지 않으므로 과거 채팅 기록 조회 불가능
     @PutMapping("/rooms/{chatroomId}")
     public String deleteChatroom(@PathVariable String chatroomId){

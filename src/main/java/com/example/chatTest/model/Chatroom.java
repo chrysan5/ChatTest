@@ -17,6 +17,7 @@ import java.util.List;
 @Setter
 @Table(name = "chatrooms")
 public class Chatroom {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chatroom_id")
@@ -27,6 +28,8 @@ public class Chatroom {
     private LocalTime closeAt;
 
     private boolean isDelete = false;
+
+    private String auctionEndTime;
 
     @OneToMany(mappedBy = "chatroom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatMessage> chatMessageList = new ArrayList<>();
@@ -39,4 +42,8 @@ public class Chatroom {
     }
 
 
+    public Chatroom(String roomname, String auctionEndTime) {
+        this.roomname = roomname;
+        this.auctionEndTime = auctionEndTime;
+    }
 }

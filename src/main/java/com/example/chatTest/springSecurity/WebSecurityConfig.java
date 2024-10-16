@@ -62,6 +62,7 @@ public class WebSecurityConfig{
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
                         .requestMatchers("/users/**").permitAll()
+                        .requestMatchers("/rabbitmq").permitAll()
                         .anyRequest().authenticated()
         );
 

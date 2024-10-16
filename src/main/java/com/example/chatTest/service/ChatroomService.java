@@ -65,7 +65,7 @@ public class ChatroomService {
 
     @Transactional
     public void createChatroom(AuctionInfoMessage auctionInfoMessage) {
-        String roomname = auctionInfoMessage.getTitle();
+        String roomname = auctionInfoMessage.getTitle() + " 채팅방";
         String auctionEndTime = auctionInfoMessage.getEndTime();
         Long userId = auctionInfoMessage.getRegisterMemberUserId();
 

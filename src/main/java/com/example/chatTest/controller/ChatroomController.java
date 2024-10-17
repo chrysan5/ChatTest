@@ -3,6 +3,7 @@ package com.example.chatTest.controller;
 
 import com.example.chatTest.model.Chatroom;
 import com.example.chatTest.rabbitmqtest.AuctionInfoMessage;
+import com.example.chatTest.service.ChatMessageService;
 import com.example.chatTest.service.ChatroomService;
 import com.example.chatTest.springSecurity.UserDetailsImpl;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.List;
 public class ChatroomController {
 
     private final ChatroomService chatroomService;
+    private final ChatMessageService chatMessageService;
 
     //채팅방 목록
     @GetMapping("/rooms-list")
@@ -36,7 +38,7 @@ public class ChatroomController {
         List<Chatroom> myChatroomList = chatroomService.getMyChatroomList(userDetails.getUser().getUserId());
         model.addAttribute("myrooms", myChatroomList);
 
-        return "/rooms";
+        return "rooms";
     }
 
 
@@ -46,7 +48,7 @@ public class ChatroomController {
         Chatroom chatroom = chatroomService.enterChatroom(chatroomId, userDetails.getUser().getUserId());
         model.addAttribute("room", chatroom);
         model.addAttribute("username", userDetails.getUsername());
-        return "/room-detail";
+        return "room-detail";
     }
 
     //채팅방 나가기 -> 채팅방을 나가도 채팅방을 삭제하지 않으면 과거 채팅 기록 조회 가능함
@@ -76,8 +78,8 @@ public class ChatroomController {
     
     //채팅방 삭제 -> 채팅방 목록에서 보이지 않으므로 과거 채팅 기록 조회 불가능
     @PutMapping("/rooms/{chatroomId}")
-    public String deleteChatroom(@PathVariable String chatroomId){
-        chatroomService.deleteChatMember(chatroomId);
+    public String deleteChatroom(@PathVariable String chatroomId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        chatroomService.deleteChatMember(chatroomId, userDetails.getUser().getUserId());
         return "redirect:/chat/rooms-list";
     }
 }

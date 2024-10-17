@@ -20,7 +20,7 @@ public class ChatScheduler {
     private final ChatroomService chatroomService;
     private final ChatMessageRepository chatMessageRepository;
 
-    @Scheduled(fixedRate = 60000) // 1분마다 실행
+    //@Scheduled(fixedRate = 60000) // 1분마다 실행
     @Transactional
     public void closeChatroom() {
         List<Chatroom> chatroomList =  chatroomRepository.findAllByAuctionEndTimeIsNotNull();

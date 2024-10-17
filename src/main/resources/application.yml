@@ -17,12 +17,23 @@ spring:
         format_sql: true
         use_sql_comments: true
 
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
+  cloud:
+    aws:
+      credentials:
+        access-key: AKIASGCF5VNKCSVLSKO6
+        secret-key: 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
+      region:
+        static: ap-northeast-2 # 서울 리전
 
+s3:
+  bucket-name: basicchat
+  path: images
+
+  #rabbitmq:
+  #  host: localhost
+  #  port: 5672
+  #  username: guest
+  #  password: guest
 
 jwt:
   secret:

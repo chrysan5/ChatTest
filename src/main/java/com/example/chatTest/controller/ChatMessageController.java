@@ -1,19 +1,13 @@
 package com.example.chatTest.controller;
 
 import com.example.chatTest.dto.ChatMessageDto;
-import com.example.chatTest.model.ChatMessage;
 import com.example.chatTest.service.ChatMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
 
-import java.util.List;
-
-@RestController
+@Controller
 public class ChatMessageController {
 
     private final SimpMessagingTemplate template;
@@ -51,13 +45,4 @@ public class ChatMessageController {
         template.convertAndSend("/subscribe/chat/room/inout/" + message.getChatroomId(), message);
     }
 
-    //채팅 메시지 검색
-    @GetMapping("/chat/messages/search")
-    public String searchMessages(@RequestParam(required = false) String search, Model model) {
-        List<ChatMessage> messages = chatMessageService.searchChatMessages(search);
-        model.addAttribute("messages", messages);
-        model.addAttribute("search", search);
-        return "room-detail";
-    }
-    
 }

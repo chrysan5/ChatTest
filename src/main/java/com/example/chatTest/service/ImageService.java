@@ -1,11 +1,12 @@
 package com.example.chatTest.service;
 
 import com.example.chatTest.dto.ImageResponseDto;
-import com.example.chatTest.model.ImageExtension;
 import com.example.chatTest.model.Image;
+import com.example.chatTest.model.ImageExtension;
 import com.example.chatTest.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,13 +20,20 @@ public class ImageService {
     private final S3UploadService s3UploadService;
     private final ImageRepository imageRepository;
 
+    final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
 
     @Transactional
     @SneakyThrows
+    @Async
     public Long uploadImage(MultipartFile file) {
         // 업로드 파일명을 불러옴
         String originalFileName = file.getOriginalFilename();
         if(originalFileName == null) throw new Exception("잘못된 파일입니다.");
+
+        if(file.getSize() > MAX_FILE_SIZE) {
+            throw new Exception(MAX_FILE_SIZE + "MB 이상의 파일은 업로드 할 수 없습니다.");
+        }
 
         // test_image.jpg -> [0]:test_image, [1]:jpg
         String[] fileInfos = splitFileName(originalFileName);

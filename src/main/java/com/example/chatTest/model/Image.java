@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "image_id")
     Long imageId;
 
     String fileName; // 파일명

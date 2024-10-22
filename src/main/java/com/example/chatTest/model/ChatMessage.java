@@ -37,9 +37,11 @@ public class ChatMessage {
     @Enumerated(EnumType.STRING)
     private MessageType type;
 
-    //private String image;
-
     private boolean isDelete = false;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatroom_id", nullable = false)

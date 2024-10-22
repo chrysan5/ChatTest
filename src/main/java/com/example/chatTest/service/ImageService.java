@@ -2,7 +2,7 @@ package com.example.chatTest.service;
 
 import com.example.chatTest.dto.ImageResponseDto;
 import com.example.chatTest.model.ImageExtension;
-import com.example.chatTest.model.domain.Image;
+import com.example.chatTest.model.Image;
 import com.example.chatTest.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

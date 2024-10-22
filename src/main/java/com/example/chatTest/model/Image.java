@@ -1,6 +1,5 @@
-package com.example.chatTest.model.domain;
+package com.example.chatTest.model;
 
-import com.example.chatTest.model.ImageExtension;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

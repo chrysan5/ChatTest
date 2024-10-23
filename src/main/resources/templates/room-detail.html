@@ -8,6 +8,7 @@
         <script src="/webjars/stomp-websocket/stomp.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
         <script src="/js/common.js"></script>
+        <link rel="stylesheet" href="/css/basic.css">
     </head>
 
     <body>
@@ -16,7 +17,9 @@
         <h1 th:text="${room.roomname}"></h1>
         <div id="content" th:data-room-id="${room.chatroomId}" th:data-username="${username}">
             <ul id="chatBox" style="list-style-type: none; padding-left: 0;"></ul> <!--채팅창-->
-            <input name="message" />
+            <input type="text" name="message" />
+            <input type="file" id="image-file" />
+            <br>
             <button id="send">보내기</button>
             <a th:href="@{/chat/rooms-out}"><button id="disconnect" type="submit">나가기</button></a>
         </div>
@@ -35,7 +38,20 @@
 
                     client.subscribe('/subscribe/chat/room/' + roomId, function (chat) {
                         let content = JSON.parse(chat.body);
-                        $('#chatBox').append('<li>' + '[' + content.senderId + '] ' + content.message + ' ('+ new Date().toLocaleString() + ')' + '</li>')
+                        console.log("content: ", content);
+
+                        let messageHtml = '<li>' + '[' + content.senderId + '] ' + content.message + ' ('+ new Date().toLocaleString() + ')' + '</li>';
+
+                        // 이미지가 포함된 경우 이미지를 표시
+                        if (content.imageurl) {
+                            //content.imageurl = https://basicchat2.s3.ap-northeast-2.amazonaws.com/images/ed9cae3e-bf94-4ad4-ba2f-9a6b87a15d9f.jpg
+
+                            messageHtml += '<li>' + '[' + content.senderId + '] ' + '<br>'
+                                + `<img src='${content.imageurl}'>` + ' ('+ new Date().toLocaleString() + ')' + '</li>';
+                            console.log("imageurl11111:",content.imageurl);
+                        }
+
+                        $('#chatBox').append(messageHtml);
                     });
 
                     client.subscribe('/subscribe/chat/room/inout/' + roomId, function (chat) {
@@ -53,8 +69,42 @@
             //메시지를 발행(생성)
             function sendMsg() {
                 let message = $('input[name="message"]').val();
-                client.send('/publish/chat/talk', {}, JSON.stringify({chatroomId: roomId, type: 'CHAT', message: message, senderId: username}));
-                $('input[name="message"]').val('');
+                let fileInput = document.getElementById("image-file");
+                let file = null;
+
+                if (fileInput && fileInput.files.length>0) { //이미지 있을때
+                    file = fileInput.files[0];
+                    let formData = new FormData();
+                    formData.append("file", file);
+
+                    // 이미지 업로드 후 이미지 URL을 받아서 전송
+                    $.ajax({
+                        url: "/images",
+                        type: "POST",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (imageurl) {
+                            client.send('/publish/chat/talk', {}, JSON.stringify({
+                                chatroomId: roomId,
+                                type: 'CHAT',
+                                message: message,
+                                senderId: username,
+                                imageurl: imageurl
+                            }));
+                            $('input[name="message"]').val(''); // 메시지 입력 필드 비우기
+                            fileInput.value = '';  // 파일 입력 필드 비우기
+                        }
+                    });
+                } else {
+                    client.send('/publish/chat/talk', {}, JSON.stringify({
+                        chatroomId: roomId,
+                        type: 'CHAT',
+                        message: message,
+                        senderId: username
+                    }));
+                    $('input[name="message"]').val('');
+                }
             }
 
             //웹소켓 연결 끊기

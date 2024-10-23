@@ -21,8 +21,8 @@ public class ImageController {
     @PostMapping
     @SneakyThrows
     public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
-        Long uploadedImageId = imageService.uploadImage(file);
-        return ResponseEntity.ok(uploadedImageId.toString());
+        String uploadFileName = imageService.uploadImage(file);
+        return ResponseEntity.ok(uploadFileName);
     }
 
     @GetMapping
@@ -31,6 +31,7 @@ public class ImageController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + response.getFileName() + "\"") // 파일의 이름은 업로드 당시의 이름으로 리턴
+                //Headers 메뉴에 Key=Content-Disposition, value=attachment; filename="song.jpg" 라고 나온다.
                 .contentType(MediaType.valueOf(response.getExt().getContentType())) // ContentType 은 업로드한 파일에 따라 변경되도록
                 .body(new InputStreamResource(response.getFileData())); // InputStream -> InputStreamResource
     }

@@ -6,7 +6,6 @@ import com.example.chatTest.model.ImageExtension;
 import com.example.chatTest.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,18 +20,18 @@ public class ImageService {
     private final ImageRepository imageRepository;
 
     final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-
+    final String S3path = "https://basicchat2.s3.ap-northeast-2.amazonaws.com/images/";
 
     @Transactional
     @SneakyThrows
-    @Async
-    public Long uploadImage(MultipartFile file) {
+    //@Async
+    public String uploadImage(MultipartFile file) {
         // 업로드 파일명을 불러옴
         String originalFileName = file.getOriginalFilename();
         if(originalFileName == null) throw new Exception("잘못된 파일입니다.");
 
         if(file.getSize() > MAX_FILE_SIZE) {
-            throw new Exception(MAX_FILE_SIZE + "MB 이상의 파일은 업로드 할 수 없습니다.");
+            throw new RuntimeException(MAX_FILE_SIZE + "MB 이상의 파일은 업로드 할 수 없습니다.");
         }
 
         // test_image.jpg -> [0]:test_image, [1]:jpg
@@ -50,7 +49,7 @@ public class ImageService {
         Image image = Image.create(originalFileName, ext, uploadFileName);
 
         imageRepository.save(image);
-        return image.getImageId();
+        return S3path + image.getUploadFileName();
     }
 
 
@@ -58,7 +57,9 @@ public class ImageService {
     //ImageResponse는 이미지 데이터를 HTTP 응답으로 전송할 때 사용되는 객체이다.
     // 일반적으로 웹 애플리케이션에서 서버가 이미지를 클라이언트에게 응답으로 제공할 때 이 개념을 사용한다.
     public ImageResponseDto getImage(Long imageId) {
-        Image image = imageRepository.findById(imageId).orElseThrow();
+        Image image = imageRepository.findById(imageId).orElseThrow(
+                () -> new RuntimeException("해당 imageId에 해당하는 이미지가 존재하지 않습니다.")
+        );
         InputStream fileData = s3UploadService.getFileFromS3(image.getUploadFileName());
         return new ImageResponseDto(image.getImageId(), image.getFileName(), image.getExt(), fileData);
     }

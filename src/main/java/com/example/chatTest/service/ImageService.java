@@ -49,7 +49,7 @@ public class ImageService {
         Image image = Image.create(originalFileName, ext, uploadFileName);
 
         imageRepository.save(image);
-        return S3path + image.getUploadFileName();
+        return S3path + uploadFileName;
     }
 
 

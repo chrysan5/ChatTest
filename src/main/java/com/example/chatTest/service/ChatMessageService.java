@@ -22,21 +22,24 @@ public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
 
     @Transactional
-    public void saveChatMessage(ChatMessageDto chatMessageDto) {
+    public ChatMessageDto saveChatMessage(ChatMessageDto chatMessageDto) {
         Chatroom chatroom = chatroomRepository.findById(chatMessageDto.getChatroomId()).orElseThrow(
                 () -> new RuntimeException("채팅방이 없습니다")
         );
 
-        chatMessageRepository.save(new ChatMessage(chatMessageDto, chatroom));
+       ChatMessage chatMessage = chatMessageRepository.save(new ChatMessage(chatMessageDto, chatroom));
+       return new ChatMessageDto(chatMessage);
+
     }
 
     @Transactional
-    public void saveChatMessage(ChatMessageDto chatMessageDto, String enterMsg) {
+    public ChatMessageDto saveChatMessage(ChatMessageDto chatMessageDto, String enterMsg) {
         Chatroom chatroom = chatroomRepository.findById(chatMessageDto.getChatroomId()).orElseThrow(
                 () -> new RuntimeException("채팅방이 없습니다")
         );
 
-        chatMessageRepository.save(new ChatMessage(chatMessageDto, enterMsg, chatroom));
+        ChatMessage chatMessage = chatMessageRepository.save(new ChatMessage(chatMessageDto, enterMsg, chatroom));
+        return new ChatMessageDto(chatMessage);
     }
 
     public String getChatMessages(ChatMessageDto message) {
@@ -49,8 +52,8 @@ public class ChatMessageService {
         String beforeMsgs = ""; //채팅방 과거 메시지 기록을 저장할 String
         for(ChatMessage chatMessage : chatMessageList) {
             //시간 포맷 설정
-            LocalDateTime time = chatMessage.getSendTime();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy. MM. dd. a h:mm:ss");
+            LocalDateTime time = LocalDateTime.parse(chatMessage.getSendTime());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formattedDateTime = time.format(formatter);
 
             if (chatMessage.getType() == MessageType.CHAT) {

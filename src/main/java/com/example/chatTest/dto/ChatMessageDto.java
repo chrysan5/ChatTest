@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,7 +13,7 @@ public class ChatMessageDto {
     private String senderId;
     private String nickname;
     private String message;
-    private LocalDateTime sendTime;
+    private String sendTime;
     private String type;
     private String imageurl;
     private boolean isDelete;
@@ -26,7 +24,9 @@ public class ChatMessageDto {
         this.senderId = chatMessage.getSenderId();
         this.nickname = chatMessage.getNickname();
         this.message = chatMessage.getMessage();
+        this.sendTime = chatMessage.getSendTime();
         this.type = chatMessage.getType().toString();
+        this.imageurl = chatMessage.getImageurl();
         this.chatroomId = chatMessage.getChatroom().getChatroomId();
     }
 }

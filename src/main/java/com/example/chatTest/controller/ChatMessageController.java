@@ -25,17 +25,19 @@ public class ChatMessageController {
         String beforeMsgs = chatMessageService.getChatMessages(message);
 
         String enterMsg = "--- " + message.getSenderId() + "님이 입장하셨습니다. ---";
-        message.setMessage(beforeMsgs + enterMsg);
+        ChatMessageDto savedEnterMessage = chatMessageService.saveChatMessage(message, enterMsg);
 
-        chatMessageService.saveChatMessage(message, enterMsg);
+        message.setMessage(beforeMsgs + savedEnterMessage.getMessage());
+        //message.setMessage(beforeMsgs + enterMsg);
+
         template.convertAndSend("/subscribe/chat/room/inout/" + message.getChatroomId(), message);
 
     }
 
     @MessageMapping("/chat/talk")
     public void talk(ChatMessageDto message) {
-        chatMessageService.saveChatMessage(message);
-        template.convertAndSend("/subscribe/chat/room/" + message.getChatroomId(), message);
+        ChatMessageDto savedMessage = chatMessageService.saveChatMessage(message);
+        template.convertAndSend("/subscribe/chat/room/" + message.getChatroomId(), savedMessage);
     }
 
     @MessageMapping("/chat/exit")

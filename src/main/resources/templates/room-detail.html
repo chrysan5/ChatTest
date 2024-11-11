@@ -7,6 +7,7 @@
         <script src="/webjars/sockjs-client/sockjs.min.js"></script>
         <script src="/webjars/stomp-websocket/stomp.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
         <script src="/js/common.js"></script>
         <link rel="stylesheet" href="/css/basic.css">
     </head>
@@ -29,6 +30,8 @@
             let roomId = $('#content').data('room-id');
             let username = '[[${username}]]';
 
+            let messages = [];
+
             $(function () {
                 let sock = new SockJS("/chat");
                 client = Stomp.over(sock);
@@ -38,25 +41,45 @@
 
                     client.subscribe('/subscribe/chat/room/' + roomId, function (chat) {
                         let content = JSON.parse(chat.body);
-                        console.log("content: ", content);
+                        let sendtime = moment(content.sendtime);// 문자열을 Date 객체로 변환
 
-                        let messageHtml = '<li>' + '[' + content.senderId + '] ' + content.message + ' ('+ new Date().toLocaleString() + ')' + '</li>';
+                        // 메시지를 배열에 추가하고 타임스탬프 기준으로 정렬
+                        messages.push({ ...content, sendtime }); // content와 sendtime을 함께 저장
 
-                        // 이미지가 포함된 경우 이미지를 표시
-                        if (content.imageurl) {
-                            //content.imageurl = https://basicchat2.s3.ap-northeast-2.amazonaws.com/images/ed9cae3e-bf94-4ad4-ba2f-9a6b87a15d9f.jpg
+                        // messages 배열을 sendtime을 기준으로 시간순으로 정렬
+                        messages.sort((a, b) => a.sendtime - b.sendtime); // moment 객체로 시간 비교
 
-                            messageHtml += '<li>' + '[' + content.senderId + '] ' + '<br>'
-                                + `<img src='${content.imageurl}'>` + ' ('+ new Date().toLocaleString() + ')' + '</li>';
-                            console.log("imageurl11111:",content.imageurl);
-                        }
+                        $('#chatBox').empty();
 
-                        $('#chatBox').append(messageHtml);
+                        messages.forEach(content => {
+                            let messageHtml = '<li>' + '[' + content.senderId + '] ' + content.message + ' ('+ content.sendtime.format('YYYY-MM-DD HH:mm:ss') + ')' + '</li>';
+
+                            // 이미지가 포함된 경우 이미지를 표시
+                            if (content.imageurl) {
+                                console.log("content.imageurl: ",content.imageurl);
+                                //content.imageurl = https://basicchat2.s3.ap-northeast-2.amazonaws.com/images/ed9cae3e-bf94-4ad4-ba2f-9a6b87a15d9f.jpg
+
+                                messageHtml = '<li>' + '[' + content.senderId + '] ' + '<br>'
+                                    + `<img src='${content.imageurl}'>` + ' ('+ content.sendtime.format('YYYY-MM-DD HH:mm:ss') + ')' + '</li>';
+                            }
+
+                            $('#chatBox').append(messageHtml); // 정렬된 순서대로 메시지 추가
+                        });
                     });
 
                     client.subscribe('/subscribe/chat/room/inout/' + roomId, function (chat) {
                         let content = JSON.parse(chat.body);
-                        $('#chatBox').append('<li>' + content.message + ' ('+ new Date().toLocaleString() + ')' + '</li>')
+                        let sendtime = moment(content.sendtime);
+
+                        messages.push({ ...content, sendtime });
+                        messages.sort((a, b) => a.sendtime - b.sendtime);
+
+                        $('#chatBox').empty();
+
+                        messages.forEach(content => {
+                            let messageHtml = '<li>' + '[' + content.senderId + '] ' + content.message + ' ('+ content.sendtime.format('YYYY-MM-DD HH:mm:ss') + ')' + '</li>';
+                            $('#chatBox').append(messageHtml);
+                        });
                     });
 
                 });

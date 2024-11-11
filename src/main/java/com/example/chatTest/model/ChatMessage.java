@@ -31,13 +31,15 @@ public class ChatMessage {
     @Column(nullable = false)
     private String message;
 
-    private LocalDateTime sendTime;
+    private String sendTime;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private MessageType type;
 
     private boolean isDelete = false;
+
+    private String imageurl;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id")
@@ -50,16 +52,18 @@ public class ChatMessage {
     public ChatMessage(ChatMessageDto chatMessageDto, Chatroom chatroom){
         this.senderId = chatMessageDto.getSenderId();
         this.message = chatMessageDto.getMessage();
-        this.sendTime = LocalDateTime.now();
+        this.sendTime = LocalDateTime.now().toString().substring(0,23);
         this.type = MessageType.valueOf(chatMessageDto.getType());
+        this.imageurl = chatMessageDto.getImageurl();
         this.chatroom = chatroom;
     }
 
     public ChatMessage(ChatMessageDto chatMessageDto, String enterMsg, Chatroom chatroom){
         this.senderId = chatMessageDto.getSenderId();
         this.message = enterMsg;
-        this.sendTime = LocalDateTime.now();
+        this.sendTime = LocalDateTime.now().toString().substring(0,23);
         this.type = MessageType.valueOf(chatMessageDto.getType());
+        this.imageurl = chatMessageDto.getImageurl();
         this.chatroom = chatroom;
     }
 }
